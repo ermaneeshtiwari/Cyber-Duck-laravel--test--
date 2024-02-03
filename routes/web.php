@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SalesRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +21,8 @@ Route::get('/', function () {
 
 Route::redirect('/dashboard', '/sales');
 
-Route::get('/sales', function () {
-    return view('coffee_sales');
-})->middleware(['auth'])->name('coffee.sales');
+Route::get('/sales', [ProductsController::class, 'index'])->middleware(['auth'])->name('coffee.sales');
+Route::POST('/sales', [SalesRecordController::class, 'store'])->middleware(['auth'])->name('coffee.sales.reocrd');
 
 Route::get('/shipping-partners', function () {
     return view('shipping_partners');
