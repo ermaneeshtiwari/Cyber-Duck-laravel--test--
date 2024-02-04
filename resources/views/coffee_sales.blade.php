@@ -24,8 +24,14 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <form action="/sales" method="post">
                         @csrf
-                        <input type="hidden" name="margin" id="margin" value="{{$productList[0]->product_profit_margin}}" />
-                        <input type="hidden" name="product_id" id="product_id" value="{{$productList[0]->product_id}}" />
+                        <select id="product_id_select" onchange="handleChange()">
+                            <option selected>Select Product</option>
+                            @foreach($productList as $item)
+                                <option value="{{$item->product_id}}" data-margin="{{$item->product_profit_margin}}">{{$item->product_name}}</option>
+                            @endforeach
+                          </select>
+                        <input type="hidden" name="margin" id="margin" value="" />
+                        <input type="hidden" name="product_id" id="product_id" value="" />
                         <input type="hidden" name="shipping_cost" id="shipping_cost" value="10" />
                         <input type="hidden" name="selling_price" id="selling_price" /> 
 
@@ -47,17 +53,21 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th scope="col">Product Name</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Unit Cost</th>
                         <th scope="col">Selling Price</th>
+                        <th scope="col">Sold at</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach ($salesRecord as $item)
                         <tr>
+                            <td>{{$item->product_name}}</td>
                             <td>{{$item->quantity}}</td>
                             <td>£{{number_format($item->unit_cost,2)}}</td>
                             <td>£{{number_format($item->selling_price,2)}}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i') }}</td>
                         </tr>  
                     @endforeach
                     </tbody>
@@ -69,9 +79,26 @@
         function handleChange() {
 
             // Get value for input
+            let selectElement = document.getElementById('product_id_select');
+           
+            var product_id = selectElement.value;
+
+            // set value on product input 
+            document.getElementById('product_id').value = product_id;
+
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+        
+            // Get the value of the data-margin attribute
+            var product_margin = selectedOption.getAttribute('data-margin');
+
+            document.getElementById('margin').value = product_margin;
+
             let quantity = parseFloat(document.getElementById('quantity').value);
+
             let unit_cost = parseFloat(document.getElementById('unit_cost').value);
+
             let profit_margin = parseFloat(document.getElementById('margin').value);
+
             let shipping_cost = parseFloat(document.getElementById('shipping_cost').value);
 
             //Check quantity and unit_cost must be number and greater than 0
@@ -81,7 +108,7 @@
             let cost = quantity * unit_cost;
             // canculate selling price
             let selling_price = (cost / ( 1 - profit_margin) ) + shipping_cost;
-            selling_price_span
+
             // set new value on input selling_price
             document.getElementById('selling_price').value = selling_price.toFixed(2);
             document.getElementById('selling_price_span').innerHTML = '£' + selling_price.toFixed(2);

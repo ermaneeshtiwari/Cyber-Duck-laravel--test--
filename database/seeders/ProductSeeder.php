@@ -17,6 +17,7 @@ class ProductSeeder extends Seeder
         // data
         $data = [
             ['product_name' => 'Gold coffee', 'product_profit_margin' => '0.25',],
+            ['product_name' => 'Arabic coffee', 'product_profit_margin' => '0.15',],
             // Add more rows as needed
         ];
 
